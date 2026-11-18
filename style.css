@@ -1,1 +1,223 @@
 
+/* =========================
+   MSK.WORK - DESIGN
+========================= */
+
+:root {
+    --background: #100d14;
+    --surface: #19131f;
+    --surface-hover: #24182d;
+    --red: #e32652;
+    --purple: #9146cc;
+    --white: #ffffff;
+    --text: #b9afc3;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--background);
+    color: var(--white);
+    font-family: 'Trebuchet MS', sans-serif;
+}
+
+/* HEADER */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 8%;
+    border-bottom: 1px solid #30213a;
+    background: rgba(16, 13, 20, 0.95);
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: var(--red);
+}
+
+nav {
+    display: flex;
+    gap: 30px;
+}
+
+nav a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: var(--red);
+}
+
+/* ACCUEIL */
+
+.hero {
+    text-align: center;
+    padding: 110px 20px 100px;
+    background:
+        radial-gradient(
+            ellipse at 30% 20%,
+            rgba(145, 70, 204, 0.16),
+            transparent 55%
+        ),
+        radial-gradient(
+            ellipse at 70% 80%,
+            rgba(227, 38, 82, 0.12),
+            transparent 50%
+        );
+}
+
+.subtitle {
+    color: #bd7bea;
+    font-size: 12px;
+    letter-spacing: 5px;
+    margin-bottom: 25px;
+}
+
+.hero h1 {
+    font-size: clamp(42px, 7vw, 75px);
+    line-height: 1.2;
+    margin-bottom: 25px;
+}
+
+.hero h1 span {
+    background: linear-gradient(
+        90deg,
+        var(--red),
+        var(--purple)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.description {
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.8;
+    max-width: 550px;
+    margin: auto;
+}
+
+/* FONCTIONNALITES */
+
+#fonctions {
+    padding: 65px 8%;
+}
+
+#fonctions h2,
+.about h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 40px;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.feature {
+    background: var(--surface);
+    padding: 30px 22px;
+    border: 1px solid #30213a;
+    border-radius: 14px;
+    transition: 0.3s;
+}
+
+.feature:hover {
+    transform: translateY(-7px);
+    background: var(--surface-hover);
+    border-color: var(--purple);
+    box-shadow: 0 8px 30px rgba(145, 70, 204, 0.12);
+}
+
+.feature span {
+    font-size: 32px;
+    color: var(--red);
+}
+
+.feature h3 {
+    margin: 20px 0 12px;
+    font-size: 17px;
+}
+
+.feature p {
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* A PROPOS */
+
+.about {
+    text-align: center;
+    padding: 70px 20px;
+    background: linear-gradient(
+        120deg,
+        rgba(145, 70, 204, 0.08),
+        rgba(227, 38, 82, 0.06)
+    );
+}
+
+.about p {
+    max-width: 550px;
+    margin: auto;
+    color: var(--text);
+    line-height: 1.8;
+}
+
+/* FOOTER */
+
+footer {
+    text-align: center;
+    padding: 25px;
+    border-top: 1px solid #30213a;
+    color: #887c91;
+    font-size: 12px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+    .features {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 550px) {
+    header {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    nav {
+        gap: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero {
+        padding: 80px 20px;
+    }
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+}
+
