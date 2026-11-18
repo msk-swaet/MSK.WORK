@@ -99,11 +99,14 @@ if (courseForm) {
                 "msk-work-courses",
                 JSON.stringify(courses)
             );
-        } catch (error) {
-            console.error("Erreur de chargement des cours :", error);
-            alert("Impossible de charger ton emploi du temps. Vérifie ta connexion.");
-            return;
-        }
+       } catch (error) {
+    console.error("Erreur de chargement des cours :", error);
+    alert(
+        "Erreur Supabase : " +
+        (error.message || JSON.stringify(error))
+    );
+    return;
+}
 
         async function saveCourses() {
             try {
