@@ -82,6 +82,29 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+const SUPABASE_URL = "https://gfromvjcbcynhaozixvv.supabase.co";
+const SUPABASE_KEY = "COLLE_TA_CLE_PUBLIABLE_ICI";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function verifierConnexion() {
+    const { data, error } = await supabaseClient.auth.getUser();
+
+    if (error || !data.user) {
+        window.location.href = "connexion.html";
+        return;
+    }
+
+    console.log("Utilisateur connecté :", data.user.email);
+}
+
+verifierConnexion();
+</script>
 </body>
 </html>
