@@ -5,6 +5,7 @@
 ========================= */
 
 async function getWorkspace() {
+
     const { data: userData, error: userError } =
         await window.supabaseClient.auth.getUser();
 
@@ -16,7 +17,7 @@ async function getWorkspace() {
 
     const { data, error } = await window.supabaseClient
         .from("user_workspace")
-        .select("données")
+        .select("data")
         .eq("user_id", user.id)
         .maybeSingle();
 
@@ -24,11 +25,12 @@ async function getWorkspace() {
 
     return {
         user,
-        workspace: data?.["données"] || {}
+        workspace: data?.data || {}
     };
 }
 
 async function saveWorkspaceField(field, value) {
+
     const { user, workspace } = await getWorkspace();
 
     workspace[field] = value;
@@ -37,8 +39,8 @@ async function saveWorkspaceField(field, value) {
         .from("user_workspace")
         .upsert({
             user_id: user.id,
-            "données": workspace,
-"Mis à jour_à": new Date().toISOString()
+            data: workspace,
+            updated_at: new Date().toISOString()
         }, {
             onConflict: "user_id"
         });
@@ -47,6 +49,7 @@ async function saveWorkspaceField(field, value) {
 }
 
 async function loadWorkspaceField(field, defaultValue) {
+
     const { workspace } = await getWorkspace();
 
     if (workspace[field] === undefined) {
@@ -94,22 +97,30 @@ if (courseForm) {
         let courses = [];
 
         try {
+
             courses = await loadWorkspaceField("courses", []);
+
             localStorage.setItem(
                 "msk-work-courses",
                 JSON.stringify(courses)
             );
-       } catch (error) {
-    console.error("Erreur de chargement des cours :", error);
-    alert(
-        "Erreur Supabase : " +
-        (error.message || JSON.stringify(error))
-    );
-    return;
-}
+
+        } catch (error) {
+
+            console.error("Erreur de chargement des cours :", error);
+
+            alert(
+                "Erreur Supabase : " +
+                (error.message || "Impossible de charger les cours.")
+            );
+
+            return;
+        }
 
         async function saveCourses() {
+
             try {
+
                 await saveWorkspaceField("courses", courses);
 
                 localStorage.setItem(
@@ -118,9 +129,16 @@ if (courseForm) {
                 );
 
                 return true;
+
             } catch (error) {
+
                 console.error("Erreur de sauvegarde des cours :", error);
-                alert("Tes cours n'ont pas pu être sauvegardés. Réessaie.");
+
+                alert(
+                    "Erreur de sauvegarde : " +
+                    (error.message || "Réessaie.")
+                );
+
                 return false;
             }
         }
@@ -133,12 +151,14 @@ if (courseForm) {
                 courses.length + " cours";
 
             if (courses.length === 0) {
+
                 scheduleList.innerHTML = `
                     <div class="empty-schedule">
                         <p>Ton emploi du temps est encore vide.</p>
                         <p>Ajoute ton premier cours pour commencer ! ✨</p>
                     </div>
                 `;
+
                 return;
             }
 
@@ -163,6 +183,7 @@ if (courseForm) {
 
                     const card = document.createElement("div");
                     card.className = "course-card";
+
                     card.style.setProperty(
                         "--course-color",
                         course.color
@@ -175,6 +196,7 @@ if (courseForm) {
                     title.textContent = course.subject;
 
                     const details = document.createElement("p");
+
                     details.textContent = course.room
                         ? "Salle : " + course.room
                         : "Salle non précisée";
@@ -183,7 +205,9 @@ if (courseForm) {
 
                     const time = document.createElement("div");
                     time.className = "course-time";
-                    time.textContent = course.start + " – " + course.end;
+
+                    time.textContent =
+                        course.start + " – " + course.end;
 
                     const actions = document.createElement("div");
                     actions.className = "course-actions";
@@ -191,6 +215,7 @@ if (courseForm) {
                     const editButton = document.createElement("button");
                     editButton.type = "button";
                     editButton.textContent = "Modifier";
+
                     editButton.addEventListener("click", () => {
                         editCourse(course.id);
                     });
@@ -198,12 +223,15 @@ if (courseForm) {
                     const deleteButton = document.createElement("button");
                     deleteButton.type = "button";
                     deleteButton.textContent = "Supprimer";
+
                     deleteButton.addEventListener("click", () => {
                         deleteCourse(course.id);
                     });
 
                     actions.append(editButton, deleteButton);
+
                     card.append(info, time, actions);
+
                     group.appendChild(card);
                 });
 
@@ -212,11 +240,15 @@ if (courseForm) {
         }
 
         function resetForm() {
+
             courseForm.reset();
+
             courseId.value = "";
             color.value = "#9146cc";
+
             formTitle.textContent = "Ajouter un cours";
             saveButton.textContent = "Ajouter le cours";
+
             cancelButton.hidden = true;
         }
 
@@ -225,17 +257,21 @@ if (courseForm) {
             event.preventDefault();
 
             if (start.value >= end.value) {
+
                 alert("L'heure de fin doit être après l'heure de début.");
+
                 return;
             }
 
             const existingId = courseId.value;
 
             const course = {
+
                 id: existingId || (
                     Date.now().toString() +
                     Math.random().toString(36).slice(2)
                 ),
+
                 subject: subject.value.trim(),
                 day: day.value,
                 start: start.value,
@@ -245,6 +281,7 @@ if (courseForm) {
             };
 
             if (existingId) {
+
                 const index = courses.findIndex(
                     item => item.id === existingId
                 );
@@ -252,11 +289,14 @@ if (courseForm) {
                 if (index !== -1) {
                     courses[index] = course;
                 }
+
             } else {
+
                 courses.push(course);
             }
 
             if (await saveCourses()) {
+
                 renderCourses();
                 resetForm();
             }
@@ -264,7 +304,9 @@ if (courseForm) {
 
         function editCourse(id) {
 
-            const course = courses.find(item => item.id === id);
+            const course = courses.find(
+                item => item.id === id
+            );
 
             if (!course) return;
 
@@ -277,7 +319,10 @@ if (courseForm) {
             color.value = course.color;
 
             formTitle.textContent = "Modifier le cours";
-            saveButton.textContent = "Enregistrer les modifications";
+
+            saveButton.textContent =
+                "Enregistrer les modifications";
+
             cancelButton.hidden = false;
 
             courseForm.scrollIntoView({
@@ -294,12 +339,17 @@ if (courseForm) {
 
             const previousCourses = [...courses];
 
-            courses = courses.filter(item => item.id !== id);
+            courses = courses.filter(
+                item => item.id !== id
+            );
 
             if (await saveCourses()) {
+
                 renderCourses();
                 resetForm();
+
             } else {
+
                 courses = previousCourses;
             }
         }
@@ -323,38 +373,69 @@ if (averageForm) {
 
     (async function initAverages() {
 
-        const subjectInput = document.getElementById("average-subject");
-        const coefficientInput = document.getElementById("average-coefficient");
-        const grade1Input = document.getElementById("grade-1");
-        const grade2Input = document.getElementById("grade-2");
-        const compositionInput = document.getElementById("composition");
+        const subjectInput =
+            document.getElementById("average-subject");
 
-        const averageId = document.getElementById("average-id");
-        const averageList = document.getElementById("average-list");
-        const generalAverage = document.getElementById("general-average");
-        const subjectTotal = document.getElementById("subject-total");
+        const coefficientInput =
+            document.getElementById("average-coefficient");
 
-        const formTitle = document.getElementById("average-form-title");
-        const saveButton = document.getElementById("save-average");
-        const cancelButton = document.getElementById("cancel-average");
+        const grade1Input =
+            document.getElementById("grade-1");
+
+        const grade2Input =
+            document.getElementById("grade-2");
+
+        const compositionInput =
+            document.getElementById("composition");
+
+        const averageId =
+            document.getElementById("average-id");
+
+        const averageList =
+            document.getElementById("average-list");
+
+        const generalAverage =
+            document.getElementById("general-average");
+
+        const subjectTotal =
+            document.getElementById("subject-total");
+
+        const formTitle =
+            document.getElementById("average-form-title");
+
+        const saveButton =
+            document.getElementById("save-average");
+
+        const cancelButton =
+            document.getElementById("cancel-average");
 
         let subjects = [];
 
         try {
+
             subjects = await loadWorkspaceField("subjects", []);
 
             localStorage.setItem(
                 "msk-work-averages",
                 JSON.stringify(subjects)
             );
+
         } catch (error) {
+
             console.error("Erreur de chargement des moyennes :", error);
-            alert("Impossible de charger tes moyennes. Vérifie ta connexion.");
+
+            alert(
+                "Erreur Supabase : " +
+                (error.message || "Impossible de charger les moyennes.")
+            );
+
             return;
         }
 
         async function saveSubjects() {
+
             try {
+
                 await saveWorkspaceField("subjects", subjects);
 
                 localStorage.setItem(
@@ -363,9 +444,16 @@ if (averageForm) {
                 );
 
                 return true;
+
             } catch (error) {
+
                 console.error("Erreur de sauvegarde des moyennes :", error);
-                alert("Tes moyennes n'ont pas pu être sauvegardées. Réessaie.");
+
+                alert(
+                    "Erreur de sauvegarde : " +
+                    (error.message || "Réessaie.")
+                );
+
                 return false;
             }
         }
@@ -375,7 +463,9 @@ if (averageForm) {
             const homeworkAverage =
                 (subject.grade1 + subject.grade2) / 2;
 
-            return (homeworkAverage + subject.composition) / 2;
+            return (
+                homeworkAverage + subject.composition
+            ) / 2;
         }
 
         function calculateGeneralAverage() {
@@ -389,8 +479,11 @@ if (averageForm) {
 
                 const average = calculateSubject(subject);
 
-                totalPoints += average * subject.coefficient;
-                totalCoefficients += subject.coefficient;
+                totalPoints +=
+                    average * subject.coefficient;
+
+                totalCoefficients +=
+                    subject.coefficient;
             });
 
             return totalPoints / totalCoefficients;
@@ -414,12 +507,14 @@ if (averageForm) {
                 );
 
             if (subjects.length === 0) {
+
                 averageList.innerHTML = `
                     <div class="empty-average">
                         <p>Aucune matière enregistrée.</p>
                         <p>Ajoute ta première matière pour commencer ! ✨</p>
                     </div>
                 `;
+
                 return;
             }
 
@@ -437,6 +532,7 @@ if (averageForm) {
 
                 const details = document.createElement("p");
                 details.className = "average-details";
+
                 details.textContent =
                     "Devoir 1 : " + subject.grade1 +
                     " | Devoir 2 : " + subject.grade2 +
@@ -463,14 +559,17 @@ if (averageForm) {
                 });
 
                 actions.append(editButton, deleteButton);
+
                 info.append(title, details, actions);
 
                 const score = document.createElement("div");
                 score.className = "average-score";
+
                 score.textContent =
                     average.toFixed(2).replace(".", ",") + " / 20";
 
                 card.append(info, score);
+
                 averageList.appendChild(card);
             });
         }
@@ -478,10 +577,13 @@ if (averageForm) {
         function resetAverageForm() {
 
             averageForm.reset();
+
             averageId.value = "";
 
             formTitle.textContent = "Ajouter une matière";
+
             saveButton.textContent = "Ajouter la matière";
+
             cancelButton.hidden = true;
         }
 
@@ -490,6 +592,7 @@ if (averageForm) {
             event.preventDefault();
 
             const name = subjectInput.value.trim();
+
             const coefficient = Number(coefficientInput.value);
             const grade1 = Number(grade1Input.value);
             const grade2 = Number(grade2Input.value);
@@ -506,17 +609,21 @@ if (averageForm) {
                 grade2 < 0 || grade2 > 20 ||
                 composition < 0 || composition > 20
             ) {
+
                 alert("Vérifie tes notes et ton coefficient.");
+
                 return;
             }
 
             const id = averageId.value;
 
             const subject = {
+
                 id: id || (
                     Date.now().toString() +
                     Math.random().toString(36).slice(2)
                 ),
+
                 name,
                 coefficient,
                 grade1,
@@ -526,17 +633,21 @@ if (averageForm) {
 
             if (id) {
 
-                const index = subjects.findIndex(item => item.id === id);
+                const index = subjects.findIndex(
+                    item => item.id === id
+                );
 
                 if (index !== -1) {
                     subjects[index] = subject;
                 }
 
             } else {
+
                 subjects.push(subject);
             }
 
             if (await saveSubjects()) {
+
                 renderAverages();
                 resetAverageForm();
             }
@@ -544,7 +655,9 @@ if (averageForm) {
 
         function editSubject(id) {
 
-            const subject = subjects.find(item => item.id === id);
+            const subject = subjects.find(
+                item => item.id === id
+            );
 
             if (!subject) return;
 
@@ -556,7 +669,10 @@ if (averageForm) {
             compositionInput.value = subject.composition;
 
             formTitle.textContent = "Modifier la matière";
-            saveButton.textContent = "Enregistrer les modifications";
+
+            saveButton.textContent =
+                "Enregistrer les modifications";
+
             cancelButton.hidden = false;
 
             averageForm.scrollIntoView({
@@ -573,12 +689,17 @@ if (averageForm) {
 
             const previousSubjects = [...subjects];
 
-            subjects = subjects.filter(item => item.id !== id);
+            subjects = subjects.filter(
+                item => item.id !== id
+            );
 
             if (await saveSubjects()) {
+
                 renderAverages();
                 resetAverageForm();
+
             } else {
+
                 subjects = previousSubjects;
             }
         }
