@@ -257,6 +257,10 @@
         SUPABASE_URL,
         SUPABASE_KEY
     );
+    client.auth.onAuthStateChange((event, session) => {
+    console.log("État de connexion :", event);
+    console.log("Session active :", !!session);
+});
 
     let mode = "login";
 
