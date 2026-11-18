@@ -199,6 +199,26 @@ document.querySelectorAll(".add-postit").forEach(button => {
 // Afficher les Post-it sauvegardés
 postits.forEach(createPostit);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+const SUPABASE_URL = "https://gfromvjcbcynhaozixvv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_SBeIjDsF-NGBZW6pHVEkfA_21L7Zue1";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function verifierConnexion() {
+    const { data, error } = await supabaseClient.auth.getUser();
+
+    if (error || !data.user) {
+        window.location.href = "connexion.html";
+    }
+}
+
+verifierConnexion();
+</script>
 </body>
 </html>
