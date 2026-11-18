@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emploi du temps | MSK.WORK</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">MSK<span>.</span>WORK</div>
+    <nav>
+        <a href="index.html">Accueil</a>
+        <a href="emploi.html">Emploi du temps</a>
+    </nav>
+</header>
+
+<main class="schedule-page">
+
+    <div class="schedule-heading">
+        <p class="subtitle">MY ORGANIZATION</p>
+        <h1>Mon <span>emploi du temps</span></h1>
+        <p class="description">
+            Organise tes journées et garde le contrôle sur tes cours.
+        </p>
+    </div>
+
+    <section class="schedule-editor">
+        <h2 id="form-title">Ajouter un cours</h2>
+
+        <form id="course-form">
+
+            <input type="hidden" id="course-id">
+
+            <label for="subject">Matière</label>
+            <input type="text" id="subject"
+                   placeholder="Ex : Mathématiques" required>
+
+            <label for="day">Jour</label>
+            <select id="day" required>
+                <option value="Lundi">Lundi</option>
+                <option value="Mardi">Mardi</option>
+                <option value="Mercredi">Mercredi</option>
+                <option value="Jeudi">Jeudi</option>
+                <option value="Vendredi">Vendredi</option>
+                <option value="Samedi">Samedi</option>
+                <option value="Dimanche">Dimanche</option>
+            </select>
+
+            <div class="time-fields">
+                <div>
+                    <label for="start">Début</label>
+                    <input type="time" id="start" required>
+                </div>
+                <div>
+                    <label for="end">Fin</label>
+                    <input type="time" id="end" required>
+                </div>
+            </div>
+
+            <label for="room">Salle (facultatif)</label>
+            <input type="text" id="room"
+                   placeholder="Ex : Salle 3">
+
+            <label for="color">Couleur du cours</label>
+            <input type="color" id="color" value="#9146cc">
+
+            <div class="form-buttons">
+                <button type="submit" id="save-course">
+                    Ajouter le cours
+                </button>
+                <button type="button" id="cancel-edit" hidden>
+                    Annuler
+                </button>
+            </div>
+
+        </form>
+    </section>
+
+    <section class="schedule-display">
+        <div class="schedule-title">
+            <h2>Mes cours</h2>
+            <span id="course-count">0 cours</span>
+        </div>
+
+        <div id="schedule-list"></div>
+    </section>
+
+</main>
+
+<footer>
+    © 2026 MSK.WORK — All rights reserved.
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
