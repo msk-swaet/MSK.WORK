@@ -67,6 +67,11 @@
     </div>
 </div>
 
+<!-- Bibliothèque et configuration Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<!-- Fonctionnement du calendrier -->
 <script>
 const monthYear = document.getElementById("month-year");
 const calendarDays = document.getElementById("calendar-days");
@@ -76,7 +81,10 @@ const eventForm = document.getElementById("event-form");
 
 let currentDate = new Date();
 let selectedDate = null;
-let events = JSON.parse(localStorage.getItem("msk-work-events") || "{}");
+
+let events = JSON.parse(
+    localStorage.getItem("msk-work-events") || "{}"
+);
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -196,11 +204,14 @@ function displayEvents() {
 
         const remove = document.createElement("button");
         remove.textContent = "Supprimer";
+
         remove.addEventListener("click", () => {
             events[selectedDate].splice(index, 1);
+
             if (events[selectedDate].length === 0) {
                 delete events[selectedDate];
             }
+
             saveEvents();
         });
 
@@ -210,7 +221,11 @@ function displayEvents() {
 }
 
 function saveEvents() {
-    localStorage.setItem("msk-work-events", JSON.stringify(events));
+    localStorage.setItem(
+        "msk-work-events",
+        JSON.stringify(events)
+    );
+
     displayCalendar();
     displayEvents();
 }
@@ -224,9 +239,15 @@ eventForm.addEventListener("submit", (e) => {
 
     if (!title) return;
 
-    if (!events[selectedDate]) events[selectedDate] = [];
+    if (!events[selectedDate]) {
+        events[selectedDate] = [];
+    }
 
-    events[selectedDate].push({ title, time, description });
+    events[selectedDate].push({
+        title,
+        time,
+        description
+    });
 
     saveEvents();
     closeModal();
@@ -250,26 +271,23 @@ modal.addEventListener("click", (e) => {
 
 displayCalendar();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- Vérification de connexion -->
 <script>
-const SUPABASE_URL = "https://gfromvjcbcynhaozixvv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_SBeIjDsF-NGBZW6pHVEkfA_21L7Zue1";
-
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
 async function verifierConnexion() {
-    const { data, error } = await supabaseClient.auth.getUser();
+    const { data, error } =
+        await window.supabaseClient.auth.getUser();
 
     if (error || !data.user) {
-        window.location.href = "connexion.html";
+        window.location.replace("connexion.html");
+        return;
     }
+
+    console.log("Utilisateur connecté :", data.user.email);
 }
 
 verifierConnexion();
 </script>
+
 </body>
 </html>
