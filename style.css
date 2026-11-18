@@ -622,4 +622,9 @@ footer {
         width: 100%;
     }
 }
-
+a.feature {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
