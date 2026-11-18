@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -106,27 +107,31 @@
     © 2026 MSK.WORK — All rights reserved.
 </footer>
 
-<script src="script.js"></script>
+<!-- Bibliothèque Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- Configuration Supabase -->
+<script src="supabase-config.js"></script>
+
+<!-- Script principal -->
+<script src="script.js"></script>
+
+<!-- Vérification de connexion -->
 <script>
-const SUPABASE_URL = "https://gfromvjcbcynhaozixvv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_SBeIjDsF-NGBZW6pHVEkfA_21L7Zue1";
-
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
 async function verifierConnexion() {
-    const { data, error } = await supabaseClient.auth.getUser();
+    const { data, error } =
+        await window.supabaseClient.auth.getUser();
 
     if (error || !data.user) {
-        window.location.href = "connexion.html";
+        window.location.replace("connexion.html");
+        return;
     }
+
+    console.log("Utilisateur connecté :", data.user.email);
 }
 
 verifierConnexion();
 </script>
+
 </body>
 </html>
