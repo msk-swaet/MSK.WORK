@@ -861,3 +861,227 @@ a.feature {
         font-size: 14px;
     }
 }
+
+/* =========================
+   PRISE DE NOTES - MSK.WORK
+========================= */
+
+.notes-page {
+    max-width: 1150px;
+    margin: 55px auto;
+    padding: 20px;
+}
+
+.notes-heading h1 {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+.notes-heading h1 span {
+    background: linear-gradient(90deg, #e32652, #9146cc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.notes-heading p {
+    color: #aaa;
+    margin-bottom: 25px;
+}
+
+.notes-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.notes-toolbar span {
+    color: white;
+}
+
+.add-postit {
+    border: none;
+    padding: 10px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.add-postit.red {
+    background: #e32652;
+    color: white;
+}
+
+.add-postit.yellow {
+    background: #f4d35e;
+    color: #29200b;
+}
+
+.add-postit.green {
+    background: #62bd78;
+    color: #102c18;
+}
+
+.add-postit:hover {
+    transform: translateY(-2px);
+}
+
+/* La feuille du cahier */
+
+.notebook {
+    position: relative;
+    min-height: 850px;
+    overflow: hidden;
+    background-color: #fffdf8;
+    background-image:
+        linear-gradient(
+            to right,
+            transparent 69px,
+            #e58b96 70px,
+            #e58b96 72px,
+            transparent 73px
+        ),
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 31px,
+            #c9d9e8 32px,
+            transparent 33px
+        );
+    border-radius: 8px;
+    box-shadow: 0 5px 25px #0006;
+}
+
+/* Zone d'écriture */
+
+.main-note {
+    position: relative;
+    z-index: 1;
+    min-height: 850px;
+    padding: 8px 25px 30px 90px;
+    color: #24212a;
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 16px;
+    line-height: 32px;
+    outline: none;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.main-note:empty::before {
+    content: attr(data-placeholder);
+    color: #aaa;
+    pointer-events: none;
+}
+
+/* Couche des Post-it */
+
+#postits-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.postit {
+    position: absolute;
+    width: 175px;
+    height: 165px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 3px 5px 12px #0003;
+    pointer-events: auto;
+}
+
+.postit.red {
+    background: #f5a1a9;
+    color: #57202b;
+}
+
+.postit.yellow {
+    background: #ffe58a;
+    color: #57420d;
+}
+
+.postit.green {
+    background: #a9e2b5;
+    color: #194c2a;
+}
+
+/* Poignée pour déplacer */
+
+.postit-handle {
+    height: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.postit-handle:active {
+    cursor: grabbing;
+}
+
+.postit-handle span {
+    font-size: 20px;
+    opacity: 0.6;
+}
+
+.delete-postit {
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* Écriture directe */
+
+.postit-content {
+    flex: 1;
+    padding: 5px 12px 12px;
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 14px;
+    line-height: 21px;
+    outline: none;
+    overflow-y: auto;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.postit-content:empty::before {
+    content: attr(data-placeholder);
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.notes-hint {
+    color: #999;
+    font-size: 13px;
+    margin-top: 15px;
+}
+
+@media (max-width: 600px) {
+    .notes-page {
+        padding: 12px;
+    }
+
+    .notebook,
+    .main-note {
+        min-height: 750px;
+    }
+
+    .main-note {
+        padding-left: 85px;
+    }
+
+    .postit {
+        width: 145px;
+        height: 145px;
+    }
+}
+
