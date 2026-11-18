@@ -52,6 +52,11 @@
     </p>
 </main>
 
+<!-- Bibliothèque et configuration Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<!-- Fonctionnement du cahier -->
 <script>
 const notebook = document.getElementById("notebook");
 const mainNote = document.getElementById("main-note");
@@ -182,6 +187,7 @@ document.querySelectorAll(".add-postit").forEach(button => {
         const id = Date.now() + nextId++;
 
         const position = postits.length;
+
         const data = {
             id,
             color,
@@ -199,26 +205,23 @@ document.querySelectorAll(".add-postit").forEach(button => {
 // Afficher les Post-it sauvegardés
 postits.forEach(createPostit);
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- Vérification de connexion -->
 <script>
-const SUPABASE_URL = "https://gfromvjcbcynhaozixvv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_SBeIjDsF-NGBZW6pHVEkfA_21L7Zue1";
-
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
 async function verifierConnexion() {
-    const { data, error } = await supabaseClient.auth.getUser();
+    const { data, error } =
+        await window.supabaseClient.auth.getUser();
 
     if (error || !data.user) {
-        window.location.href = "connexion.html";
+        window.location.replace("connexion.html");
+        return;
     }
+
+    console.log("Utilisateur connecté :", data.user.email);
 }
 
 verifierConnexion();
 </script>
+
 </body>
 </html>
