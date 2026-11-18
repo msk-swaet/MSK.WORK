@@ -16,7 +16,7 @@ async function getWorkspace() {
 
     const { data, error } = await window.supabaseClient
         .from("user_workspace")
-        .select("data")
+        .select("données")
         .eq("user_id", user.id)
         .maybeSingle();
 
@@ -24,7 +24,7 @@ async function getWorkspace() {
 
     return {
         user,
-        workspace: data?.data || {}
+        workspace: data?.["données"] || {}
     };
 }
 
@@ -37,8 +37,8 @@ async function saveWorkspaceField(field, value) {
         .from("user_workspace")
         .upsert({
             user_id: user.id,
-            data: workspace,
-            updated_at: new Date().toISOString()
+            "données": workspace,
+"Mis à jour_à": new Date().toISOString()
         }, {
             onConflict: "user_id"
         });
