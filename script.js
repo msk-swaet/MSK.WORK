@@ -219,3 +219,243 @@ if (courseForm) {
     renderCourses();
 }
 
+/* =========================
+   MSK.WORK
+   CALCUL DES MOYENNES
+========================= */
+
+const averageForm = document.getElementById("average-form");
+
+if (averageForm) {
+
+    let subjects = JSON.parse(
+        localStorage.getItem("msk-work-averages") || "[]"
+    );
+
+    const subjectInput = document.getElementById("average-subject");
+    const coefficientInput = document.getElementById("average-coefficient");
+    const grade1Input = document.getElementById("grade-1");
+    const grade2Input = document.getElementById("grade-2");
+    const compositionInput = document.getElementById("composition");
+
+    const averageId = document.getElementById("average-id");
+    const averageList = document.getElementById("average-list");
+    const generalAverage = document.getElementById("general-average");
+    const subjectTotal = document.getElementById("subject-total");
+
+    const formTitle = document.getElementById("average-form-title");
+    const saveButton = document.getElementById("save-average");
+    const cancelButton = document.getElementById("cancel-average");
+
+    function saveSubjects() {
+        localStorage.setItem(
+            "msk-work-averages",
+            JSON.stringify(subjects)
+        );
+    }
+
+    function calculateSubject(subject) {
+        const homeworkAverage =
+            (subject.grade1 + subject.grade2) / 2;
+
+        return (homeworkAverage + subject.composition) / 2;
+    }
+
+    function calculateGeneralAverage() {
+
+        if (subjects.length === 0) return null;
+
+        let totalPoints = 0;
+        let totalCoefficients = 0;
+
+        subjects.forEach(subject => {
+            const average = calculateSubject(subject);
+
+            totalPoints += average * subject.coefficient;
+            totalCoefficients += subject.coefficient;
+        });
+
+        return totalPoints / totalCoefficients;
+    }
+
+    function renderAverages() {
+
+        averageList.innerHTML = "";
+
+        const general = calculateGeneralAverage();
+
+        generalAverage.textContent = general === null
+            ? "-- / 20"
+            : general.toFixed(2).replace(".", ",") + " / 20";
+
+        subjectTotal.textContent =
+            subjects.length + (subjects.length > 1
+                ? " matières"
+                : " matière");
+
+        if (subjects.length === 0) {
+            averageList.innerHTML = `
+                <div class="empty-average">
+                    <p>Aucune matière enregistrée.</p>
+                    <p>Ajoute ta première matière pour commencer ! ✨</p>
+                </div>
+            `;
+            return;
+        }
+
+        subjects.forEach(subject => {
+
+            const average = calculateSubject(subject);
+
+            const card = document.createElement("div");
+            card.className = "average-card";
+
+            const info = document.createElement("div");
+
+            const title = document.createElement("h3");
+            title.textContent = subject.name;
+
+            const details = document.createElement("p");
+            details.className = "average-details";
+            details.textContent =
+                "Devoir 1 : " + subject.grade1 +
+                " | Devoir 2 : " + subject.grade2 +
+                " | Composition : " + subject.composition +
+                " | Coefficient : " + subject.coefficient;
+
+            const actions = document.createElement("div");
+            actions.className = "average-actions";
+
+            const editButton = document.createElement("button");
+            editButton.type = "button";
+            editButton.textContent = "Modifier";
+
+            editButton.addEventListener("click", () => {
+                editSubject(subject.id);
+            });
+
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.textContent = "Supprimer";
+
+            deleteButton.addEventListener("click", () => {
+                deleteSubject(subject.id);
+            });
+
+            actions.append(editButton, deleteButton);
+            info.append(title, details, actions);
+
+            const score = document.createElement("div");
+            score.className = "average-score";
+            score.textContent =
+                average.toFixed(2).replace(".", ",") + " / 20";
+
+            card.append(info, score);
+            averageList.appendChild(card);
+        });
+    }
+
+    function resetAverageForm() {
+        averageForm.reset();
+        averageId.value = "";
+
+        formTitle.textContent = "Ajouter une matière";
+        saveButton.textContent = "Ajouter la matière";
+        cancelButton.hidden = true;
+    }
+
+    averageForm.addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const name = subjectInput.value.trim();
+        const coefficient = Number(coefficientInput.value);
+        const grade1 = Number(grade1Input.value);
+        const grade2 = Number(grade2Input.value);
+        const composition = Number(compositionInput.value);
+
+        if (
+            !name ||
+            !Number.isFinite(coefficient) ||
+            coefficient <= 0 ||
+            !Number.isFinite(grade1) ||
+            !Number.isFinite(grade2) ||
+            !Number.isFinite(composition) ||
+            grade1 < 0 || grade1 > 20 ||
+            grade2 < 0 || grade2 > 20 ||
+            composition < 0 || composition > 20
+        ) {
+            alert("Vérifie tes notes et ton coefficient.");
+            return;
+        }
+
+        const id = averageId.value;
+
+        const subject = {
+            id: id || (
+                Date.now().toString() +
+                Math.random().toString(36).slice(2)
+            ),
+            name,
+            coefficient,
+            grade1,
+            grade2,
+            composition
+        };
+
+        if (id) {
+            const index = subjects.findIndex(item => item.id === id);
+
+            if (index !== -1) {
+                subjects[index] = subject;
+            }
+        } else {
+            subjects.push(subject);
+        }
+
+        saveSubjects();
+        renderAverages();
+        resetAverageForm();
+    });
+
+    function editSubject(id) {
+
+        const subject = subjects.find(item => item.id === id);
+
+        if (!subject) return;
+
+        averageId.value = subject.id;
+        subjectInput.value = subject.name;
+        coefficientInput.value = subject.coefficient;
+        grade1Input.value = subject.grade1;
+        grade2Input.value = subject.grade2;
+        compositionInput.value = subject.composition;
+
+        formTitle.textContent = "Modifier la matière";
+        saveButton.textContent = "Enregistrer les modifications";
+        cancelButton.hidden = false;
+
+        averageForm.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }
+
+    function deleteSubject(id) {
+
+        if (!confirm("Supprimer cette matière et ses notes ?")) {
+            return;
+        }
+
+        subjects = subjects.filter(item => item.id !== id);
+
+        saveSubjects();
+        renderAverages();
+        resetAverageForm();
+    }
+
+    cancelButton.addEventListener("click", resetAverageForm);
+
+    renderAverages();
+}
+
