@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes notes | MSK.WORK</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">MSK<span>.</span>WORK</div>
+    <nav>
+        <a href="index.html">Accueil</a>
+        <a href="emploi.html">Emploi du temps</a>
+        <a href="moyenne.html">Mes moyennes</a>
+        <a href="calendrier.html">Calendrier</a>
+        <a href="notes.html">Mes notes</a>
+    </nav>
+</header>
+
+<main class="notes-page">
+    <div class="notes-heading">
+        <div>
+            <h1>Mon <span>cahier</span></h1>
+            <p>Écris, organise et colle tes idées partout.</p>
+        </div>
+    </div>
+
+    <div class="notes-toolbar">
+        <span>Ajouter un Post-it :</span>
+        <button class="add-postit red" data-color="red">Rouge</button>
+        <button class="add-postit yellow" data-color="yellow">Jaune</button>
+        <button class="add-postit green" data-color="green">Vert</button>
+    </div>
+
+    <div id="notebook" class="notebook">
+        <div
+            id="main-note"
+            class="main-note"
+            contenteditable="true"
+            spellcheck="true"
+            data-placeholder="Commence à écrire tes notes ici..."
+        ></div>
+
+        <div id="postits-layer"></div>
+    </div>
+
+    <p class="notes-hint">
+        Astuce : utilise la petite poignée en haut d'un Post-it pour le déplacer.
+    </p>
+</main>
+
+<script>
+const notebook = document.getElementById("notebook");
+const mainNote = document.getElementById("main-note");
+const postitsLayer = document.getElementById("postits-layer");
+
+const NOTE_KEY = "msk-work-main-note";
+const POSTIT_KEY = "msk-work-postits";
+
+let postits = [];
+let nextId = 1;
+
+// Charger la note principale
+mainNote.innerHTML = localStorage.getItem(NOTE_KEY) || "";
+
+mainNote.addEventListener("input", () => {
+    localStorage.setItem(NOTE_KEY, mainNote.innerHTML);
+});
+
+// Charger les Post-it
+try {
+    postits = JSON.parse(localStorage.getItem(POSTIT_KEY) || "[]");
+} catch {
+    postits = [];
+}
+
+function savePostits() {
+    localStorage.setItem(POSTIT_KEY, JSON.stringify(postits));
+}
+
+function createPostit(data) {
+    const postit = document.createElement("div");
+    postit.className = `postit ${data.color}`;
+    postit.dataset.id = data.id;
+
+    postit.style.left = data.left + "px";
+    postit.style.top = data.top + "px";
+
+    const handle = document.createElement("div");
+    handle.className = "postit-handle";
+    handle.innerHTML = '<span>⠿</span><button type="button" class="delete-postit" title="Supprimer">×</button>';
+
+    const content = document.createElement("div");
+    content.className = "postit-content";
+    content.contentEditable = "true";
+    content.spellcheck = true;
+    content.textContent = data.text || "";
+    content.dataset.placeholder = "Écris ici...";
+
+    postit.append(handle, content);
+    postitsLayer.appendChild(postit);
+
+    content.addEventListener("input", () => {
+        updatePostit(data.id, { text: content.textContent });
+    });
+
+    handle.querySelector(".delete-postit").addEventListener("click", () => {
+        postits = postits.filter(item => item.id !== data.id);
+        postit.remove();
+        savePostits();
+    });
+
+    makeDraggable(postit, handle);
+}
+
+function updatePostit(id, changes) {
+    postits = postits.map(item =>
+        item.id === id ? { ...item, ...changes } : item
+    );
+    savePostits();
+}
+
+function makeDraggable(postit, handle) {
+    let startX = 0;
+    let startY = 0;
+    let originalX = 0;
+    let originalY = 0;
+
+    handle.addEventListener("pointerdown", (e) => {
+        if (e.target.closest(".delete-postit")) return;
+
+        e.preventDefault();
+        handle.setPointerCapture(e.pointerId);
+
+        startX = e.clientX;
+        startY = e.clientY;
+        originalX = postit.offsetLeft;
+        originalY = postit.offsetTop;
+
+        function move(ev) {
+            const maxX = notebook.clientWidth - postit.offsetWidth;
+            const maxY = notebook.clientHeight - postit.offsetHeight;
+
+            const newX = Math.max(0, Math.min(
+                maxX,
+                originalX + ev.clientX - startX
+            ));
+
+            const newY = Math.max(0, Math.min(
+                maxY,
+                originalY + ev.clientY - startY
+            ));
+
+            postit.style.left = newX + "px";
+            postit.style.top = newY + "px";
+        }
+
+        function stop() {
+            handle.removeEventListener("pointermove", move);
+            handle.removeEventListener("pointerup", stop);
+            handle.removeEventListener("pointercancel", stop);
+
+            updatePostit(Number(postit.dataset.id), {
+                left: postit.offsetLeft,
+                top: postit.offsetTop
+            });
+        }
+
+        handle.addEventListener("pointermove", move);
+        handle.addEventListener("pointerup", stop);
+        handle.addEventListener("pointercancel", stop);
+    });
+}
+
+// Ajouter un Post-it
+document.querySelectorAll(".add-postit").forEach(button => {
+    button.addEventListener("click", () => {
+        const color = button.dataset.color;
+        const id = Date.now() + nextId++;
+
+        const position = postits.length;
+        const data = {
+            id,
+            color,
+            text: "",
+            left: 30 + (position % 4) * 35,
+            top: 35 + (position % 5) * 35
+        };
+
+        postits.push(data);
+        createPostit(data);
+        savePostits();
+    });
+});
+
+// Afficher les Post-it sauvegardés
+postits.forEach(createPostit);
+</script>
+
+</body>
+</html>
