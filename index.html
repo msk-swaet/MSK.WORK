@@ -40,10 +40,10 @@
             <div class="features">
 
                 <a href="emploi.html" class="feature">
-                     <span>◷</span>
-                     <h3>Emploi du temps</h3>
-                     <p>Organise tes cours et tes horaires.</p>
-                 </a>
+                    <span>◷</span>
+                    <h3>Emploi du temps</h3>
+                    <p>Organise tes cours et tes horaires.</p>
+                </a>
 
                 <a href="moyenne.html" class="feature">
                     <span>▦</span>
@@ -56,23 +56,25 @@
                     <h3>Calendrier</h3>
                     <p>Planifie tes journées et tes événements avec style.</p>
                 </a>
+
                 <a href="notes.html" class="feature">
                     <span>✎</span>
                     <h3>Prise de notes</h3>
                     <p>Écris tes cours et organise tes idées à ta guise.</p>
-              </a>
+                </a>
 
             </div>
         </section>
 
         <section id="apropos" class="about">
             <h2>À propos de MSK.WORK</h2>
+
             <p>
                 Un espace pensé pour faciliter
                 l'organisation scolaire et accompagner
                 chaque élève dans son travail et sa réussite.
 
-                Crée par une élève pour des élèves 
+                Créé par une élève pour des élèves
             </p>
         </section>
     </main>
@@ -81,30 +83,34 @@
         <p>© 2026 MSK.WORK — All rights reserved.</p>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- Bibliothèque Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-const SUPABASE_URL = "https://gfromvjcbcynhaozixvv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_SBeIjDsF-NGBZW6pHVEkfA_21L7Zue1";
+    <!-- Configuration Supabase -->
+    <script src="supabase-config.js"></script>
 
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+    <!-- Script principal -->
+    <script src="script.js"></script>
 
-async function verifierConnexion() {
-    const { data, error } = await supabaseClient.auth.getUser();
+    <!-- Vérification de connexion -->
+    <script>
+        async function verifierConnexion() {
+            const { data, error } =
+                await window.supabaseClient.auth.getUser();
 
-    if (error || !data.user) {
-        window.location.href = "connexion.html";
-        return;
-    }
+            if (error || !data.user) {
+                window.location.replace("connexion.html");
+                return;
+            }
 
-    console.log("Utilisateur connecté :", data.user.email);
-}
+            console.log(
+                "Utilisateur connecté :",
+                data.user.email
+            );
+        }
 
-verifierConnexion();
-</script>
+        verifierConnexion();
+    </script>
+
 </body>
 </html>
