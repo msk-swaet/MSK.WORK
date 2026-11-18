@@ -15,7 +15,6 @@ if (courseForm) {
         "Jeudi",
         "Vendredi",
         "Samedi",
-        "Dimanche"
     ];
 
     let courses = JSON.parse(
