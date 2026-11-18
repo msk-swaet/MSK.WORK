@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes moyennes | MSK.WORK</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="logo">MSK<span>.</span>WORK</div>
+
+    <nav>
+        <a href="index.html">Accueil</a>
+        <a href="emploi.html">Emploi du temps</a>
+        <a href="moyenne.html">Mes moyennes</a>
+    </nav>
+</header>
+
+<main class="average-page">
+
+    <section class="average-heading">
+        <p class="subtitle">MY ACADEMIC RESULTS</p>
+        <h1>Mes <span>moyennes</span></h1>
+        <p class="description">
+            Enregistre tes notes et suis tes résultats scolaires.
+        </p>
+    </section>
+
+    <section class="general-average">
+        <p>MA MOYENNE GÉNÉRALE</p>
+        <div id="general-average">-- / 20</div>
+        <span id="subject-total">0 matière</span>
+    </section>
+
+    <section class="average-editor">
+
+        <h2 id="average-form-title">Ajouter une matière</h2>
+
+        <form id="average-form">
+
+            <input type="hidden" id="average-id">
+
+            <label for="average-subject">Matière</label>
+            <input type="text" id="average-subject"
+                   placeholder="Ex : Mathématiques" required>
+
+            <label for="average-coefficient">Coefficient</label>
+            <input type="number" id="average-coefficient"
+                   min="0.01" step="any" placeholder="Ex : 4" required>
+
+            <div class="grades-grid">
+
+                <div>
+                    <label for="grade-1">Devoir 1 / 20</label>
+                    <input type="number" id="grade-1"
+                           min="0" max="20" step="0.25"
+                           placeholder="Note" required>
+                </div>
+
+                <div>
+                    <label for="grade-2">Devoir 2 / 20</label>
+                    <input type="number" id="grade-2"
+                           min="0" max="20" step="0.25"
+                           placeholder="Note" required>
+                </div>
+
+                <div class="composition-field">
+                    <label for="composition">Composition / 20</label>
+                    <input type="number" id="composition"
+                           min="0" max="20" step="0.25"
+                           placeholder="Note" required>
+                </div>
+
+            </div>
+
+            <div class="form-buttons">
+                <button type="submit" id="save-average">
+                    Ajouter la matière
+                </button>
+
+                <button type="button" id="cancel-average" hidden>
+                    Annuler
+                </button>
+            </div>
+
+        </form>
+    </section>
+
+    <section class="results-section">
+
+        <div class="results-heading">
+            <h2>Mes résultats</h2>
+            <span>Année scolaire</span>
+        </div>
+
+        <div id="average-list"></div>
+
+    </section>
+
+</main>
+
+<footer>
+    © 2026 MSK.WORK — All rights reserved.
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
