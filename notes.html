@@ -6,7 +6,406 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes notes | MSK.WORK</title>
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* ===== ESPACE NOTES ===== */
+
+        .notes-page {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .notes-heading {
+            margin-bottom: 30px;
+        }
+
+        .notes-heading h1 {
+            font-size: 2.2rem;
+        }
+
+        .notes-heading h1 span {
+            color: #e75480;
+        }
+
+        .notes-heading p {
+            opacity: .7;
+        }
+
+        .notes-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .notes-actions button,
+        .editor-actions button,
+        .postit-toolbar button {
+            border: none;
+            border-radius: 10px;
+            padding: 11px 16px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .primary-note-button {
+            background: #e75480;
+            color: white;
+        }
+
+        .secondary-note-button {
+            background: #29232e;
+            color: white;
+        }
+
+        .notes-actions button:hover,
+        .editor-actions button:hover,
+        .postit-toolbar button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.12);
+        }
+
+        /* ===== CARTES DES NOTES ===== */
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 18px;
+        }
+
+        .note-card {
+            min-height: 165px;
+            border-radius: 14px;
+            padding: 18px;
+            color: #211a23;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: .2s;
+            box-shadow: 0 5px 15px #0002;
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px) rotate(-1deg);
+        }
+
+        .note-card h3 {
+            margin: 0 0 12px;
+            font-size: 1.05rem;
+            overflow-wrap: anywhere;
+        }
+
+        .note-card p {
+            font-size: .88rem;
+            opacity: .8;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+            flex: 1;
+        }
+
+        .note-card small {
+            margin-top: 12px;
+            opacity: .65;
+        }
+
+        .note-card-delete {
+            position: absolute;
+            right: 10px;
+            top: 8px;
+            border: none;
+            background: #0002;
+            color: #222;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+
+        .note-pink { background: #f5bfd1; }
+        .note-purple { background: #d9c5f3; }
+        .note-yellow { background: #f8e5a6; }
+        .note-green { background: #c6e5c8; }
+        .note-blue { background: #c5dff3; }
+        .note-orange { background: #f5d0ae; }
+
+        .empty-notes {
+            opacity: .6;
+            padding: 30px 10px;
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+
+        /* ===== EDITEUR DU CAHIER ===== */
+
+        .note-editor {
+            display: none;
+        }
+
+        .note-editor.active {
+            display: block;
+        }
+
+        .notes-library.hidden {
+            display: none;
+        }
+
+        .editor-topbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .editor-title {
+            flex: 1;
+            min-width: 180px;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #555;
+            color: white;
+            padding: 10px 5px;
+            font-size: 1.35rem;
+            outline: none;
+        }
+
+        .editor-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .editor-actions button {
+            background: #29232e;
+            color: white;
+        }
+
+        .editor-actions .save-button {
+            background: #e75480;
+        }
+
+        .delete-note-button {
+            background: #71333f !important;
+        }
+
+        .note-colors {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .note-color {
+            width: 25px;
+            height: 25px;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .note-color.selected {
+            outline: 2px solid white;
+            outline-offset: 3px;
+        }
+
+        /* ===== CAHIER NOIR ===== */
+
+        .notebook {
+            position: relative;
+            min-height: 750px;
+            background: #111114;
+            border: 1px solid #39343e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 35px #0005;
+        }
+
+        .main-note {
+            position: relative;
+            z-index: 1;
+            box-sizing: border-box;
+            min-height: 750px;
+            padding: 25px 30px 40px 75px;
+            color: #f5f5f5;
+            font-size: 16px;
+            line-height: 34px;
+            outline: none;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+
+            background-image:
+                linear-gradient(
+                    to right,
+                    transparent 54px,
+                    #9c5268 55px,
+                    transparent 57px
+                ),
+                repeating-linear-gradient(
+                    to bottom,
+                    transparent 0px,
+                    transparent 33px,
+                    #343039 34px
+                );
+            background-attachment: local;
+        }
+
+        .main-note:empty::before {
+            content: attr(data-placeholder);
+            color: #77717d;
+            pointer-events: none;
+        }
+
+        /* ===== POST-IT SUR LE CAHIER ===== */
+
+        .postit-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin: 18px 0;
+        }
+
+        .postit-toolbar span {
+            color: #ddd;
+        }
+
+        .postit-toolbar .red {
+            background: #e99a9a;
+            color: #341c1c;
+        }
+
+        .postit-toolbar .yellow {
+            background: #f4df87;
+            color: #3b3218;
+        }
+
+        .postit-toolbar .green {
+            background: #a9d9aa;
+            color: #1c351e;
+        }
+
+        .postit-toolbar .blue {
+            background: #a8cbea;
+            color: #1c2d40;
+        }
+
+        .postit-toolbar .purple {
+            background: #d0b4eb;
+            color: #30203e;
+        }
+
+        #postits-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .postit {
+            position: absolute;
+            width: 170px;
+            min-height: 150px;
+            box-sizing: border-box;
+            padding: 0 10px 12px;
+            border-radius: 3px;
+            box-shadow: 3px 5px 12px #0006;
+            color: #292329;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .postit.red { background: #f2a6a6; }
+        .postit.yellow { background: #f6e69b; }
+        .postit.green { background: #b7e0b7; }
+        .postit.blue { background: #b8d9f3; }
+        .postit.purple { background: #dbc5f3; }
+
+        .postit-handle {
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            font-size: 19px;
+            color: #473a40;
+        }
+
+        .postit-handle:active {
+            cursor: grabbing;
+        }
+
+        .delete-postit {
+            border: none;
+            background: #0002;
+            color: #35272d;
+            border-radius: 50%;
+            width: 23px;
+            height: 23px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .postit-content {
+            flex: 1;
+            min-height: 110px;
+            outline: none;
+            padding: 5px 3px;
+            font-size: 14px;
+            line-height: 21px;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        .postit-content:empty::before {
+            content: attr(data-placeholder);
+            opacity: .55;
+        }
+
+        .notes-hint {
+            opacity: .65;
+            margin-top: 18px;
+            font-size: .9rem;
+        }
+
+        .save-status {
+            font-size: .85rem;
+            opacity: .65;
+        }
+
+        @media(max-width: 600px) {
+            .notes-page {
+                padding: 12px;
+            }
+
+            .notebook,
+            .main-note {
+                min-height: 700px;
+            }
+
+            .main-note {
+                padding-left: 62px;
+                padding-right: 15px;
+            }
+
+            .postit {
+                width: 145px;
+            }
+
+            .editor-topbar {
+                align-items: stretch;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
 <header>
@@ -21,6 +420,7 @@
 </header>
 
 <main class="notes-page">
+
     <div class="notes-heading">
         <div>
             <h1>Mon <span>cahier</span></h1>
@@ -28,75 +428,545 @@
         </div>
     </div>
 
-    <div class="notes-toolbar">
-        <span>Ajouter un Post-it :</span>
-        <button class="add-postit red" data-color="red">Rouge</button>
-        <button class="add-postit yellow" data-color="yellow">Jaune</button>
-        <button class="add-postit green" data-color="green">Vert</button>
-    </div>
+    <!-- BIBLIOTHEQUE DES NOTES -->
 
-    <div id="notebook" class="notebook">
-        <div
-            id="main-note"
-            class="main-note"
-            contenteditable="true"
-            spellcheck="true"
-            data-placeholder="Commence à écrire tes notes ici..."
-        ></div>
+    <section id="notes-library" class="notes-library">
 
-        <div id="postits-layer"></div>
-    </div>
+        <div class="notes-actions">
+            <button id="new-note-button" class="primary-note-button">
+                + Nouvelle note
+            </button>
+            <span id="library-status" class="save-status"></span>
+        </div>
 
-    <p class="notes-hint">
-        Astuce : utilise la petite poignée en haut d'un Post-it pour le déplacer.
-    </p>
+        <div id="notes-grid" class="notes-grid"></div>
+
+    </section>
+
+    <!-- EDITEUR DU CAHIER -->
+
+    <section id="note-editor" class="note-editor">
+
+        <div class="editor-topbar">
+
+            <input
+                id="note-title"
+                class="editor-title"
+                type="text"
+                maxlength="100"
+                placeholder="Titre de ma note..."
+            >
+
+            <div class="editor-actions">
+                <button id="back-button">← Mes notes</button>
+                <button id="save-button" class="save-button">Enregistrer</button>
+                <button id="delete-note-button" class="delete-note-button">
+                    Supprimer
+                </button>
+            </div>
+
+        </div>
+
+        <div class="note-colors">
+            <span>Couleur de la carte :</span>
+
+            <button class="note-color note-pink selected"
+                data-note-color="pink" title="Rose"></button>
+
+            <button class="note-color note-purple"
+                data-note-color="purple" title="Violet"></button>
+
+            <button class="note-color note-yellow"
+                data-note-color="yellow" title="Jaune"></button>
+
+            <button class="note-color note-green"
+                data-note-color="green" title="Vert"></button>
+
+            <button class="note-color note-blue"
+                data-note-color="blue" title="Bleu"></button>
+
+            <button class="note-color note-orange"
+                data-note-color="orange" title="Orange"></button>
+        </div>
+
+        <!-- POST-IT : ils restent sur le cahier -->
+
+        <div class="postit-toolbar">
+            <span>Ajouter un Post-it :</span>
+
+            <button class="add-postit red" data-color="red">Rouge</button>
+            <button class="add-postit yellow" data-color="yellow">Jaune</button>
+            <button class="add-postit green" data-color="green">Vert</button>
+            <button class="add-postit blue" data-color="blue">Bleu</button>
+            <button class="add-postit purple" data-color="purple">Violet</button>
+        </div>
+
+        <div id="notebook" class="notebook">
+
+            <div
+                id="main-note"
+                class="main-note"
+                contenteditable="true"
+                spellcheck="true"
+                data-placeholder="Commence à écrire tes notes ici..."
+            ></div>
+
+            <div id="postits-layer"></div>
+
+        </div>
+
+        <p class="notes-hint">
+            Astuce : écris directement sur les Post-it et utilise leur poignée
+            pour les déplacer sur ton cahier.
+        </p>
+
+        <p id="editor-status" class="save-status"></p>
+
+    </section>
+
 </main>
 
-<!-- Bibliothèque et configuration Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 
-<!-- Fonctionnement du cahier -->
 <script>
+/* =====================================
+   ELEMENTS ET DONNEES
+===================================== */
+
+const library = document.getElementById("notes-library");
+const editor = document.getElementById("note-editor");
+const notesGrid = document.getElementById("notes-grid");
+
 const notebook = document.getElementById("notebook");
 const mainNote = document.getElementById("main-note");
 const postitsLayer = document.getElementById("postits-layer");
 
+const noteTitle = document.getElementById("note-title");
+
 const NOTE_KEY = "msk-work-main-note";
 const POSTIT_KEY = "msk-work-postits";
 
+let notes = [];
 let postits = [];
+let activeNoteId = null;
+let activeNoteColor = "pink";
+let currentUser = null;
+let saveTimer = null;
+let saveChain = Promise.resolve();
 let nextId = 1;
 
-// Charger la note principale
-mainNote.innerHTML = localStorage.getItem(NOTE_KEY) || "";
 
-mainNote.addEventListener("input", () => {
-    localStorage.setItem(NOTE_KEY, mainNote.innerHTML);
-});
+/* =====================================
+   OUTILS
+===================================== */
 
-// Charger les Post-it
-try {
-    postits = JSON.parse(localStorage.getItem(POSTIT_KEY) || "[]");
-} catch {
-    postits = [];
+function createId() {
+    if (window.crypto && crypto.randomUUID) {
+        return crypto.randomUUID();
+    }
+
+    return Date.now().toString() +
+        Math.random().toString(36).slice(2);
 }
 
+function getTextPreview(html) {
+    const temp = document.createElement("div");
+    temp.innerHTML = html || "";
+    return temp.innerText.trim();
+}
+
+function updateStatus(message, target = "editor-status") {
+    document.getElementById(target).textContent = message;
+}
+
+
+/* =====================================
+   SUPABASE
+===================================== */
+
+async function getWorkspace() {
+    const { data, error } = await window.supabaseClient
+        .from("user_workspace")
+        .select("data")
+        .eq("user_id", currentUser.id)
+        .maybeSingle();
+
+    if (error) throw error;
+
+    return data?.data || {};
+}
+
+async function saveWorkspace() {
+    if (!currentUser) return;
+
+    const currentNotes = JSON.parse(JSON.stringify(notes));
+    const currentPostits = JSON.parse(JSON.stringify(postits));
+
+    saveChain = saveChain.then(async () => {
+
+        const workspace = await getWorkspace();
+
+        workspace.notes = currentNotes;
+        workspace.postits = currentPostits;
+
+        const { error } = await window.supabaseClient
+            .from("user_workspace")
+            .upsert({
+                user_id: currentUser.id,
+                data: workspace,
+                updated_at: new Date().toISOString()
+            }, {
+                onConflict: "user_id"
+            });
+
+        if (error) throw error;
+
+        localStorage.setItem(NOTE_KEY,
+            activeNoteId
+                ? (currentNotes.find(n => n.id === activeNoteId)?.content || "")
+                : ""
+        );
+
+        localStorage.setItem(POSTIT_KEY, JSON.stringify(currentPostits));
+
+        updateStatus("✓ Enregistré dans le cloud");
+        updateStatus("✓ Synchronisé", "library-status");
+
+    }).catch(error => {
+        console.error("Erreur de sauvegarde :", error);
+        updateStatus("Erreur de sauvegarde. Vérifie ta connexion.");
+    });
+
+    return saveChain;
+}
+
+function scheduleSave() {
+    updateStatus("Enregistrement...");
+
+    clearTimeout(saveTimer);
+
+    saveTimer = setTimeout(() => {
+        saveWorkspace();
+    }, 500);
+}
+
+
+/* =====================================
+   CHARGEMENT DES DONNEES
+===================================== */
+
+async function loadWorkspace() {
+
+    const workspace = await getWorkspace();
+
+    if (Array.isArray(workspace.notes)) {
+        notes = workspace.notes;
+    } else {
+        notes = [];
+
+        // Récupération de l'ancienne note principale
+        const oldNote =
+            workspace.mainNote ||
+            localStorage.getItem(NOTE_KEY) ||
+            "";
+
+        if (oldNote.trim()) {
+            notes.push({
+                id: createId(),
+                title: "Anciennes notes",
+                content: oldNote,
+                color: "pink",
+                updatedAt: new Date().toISOString()
+            });
+        }
+    }
+
+    if (Array.isArray(workspace.postits)) {
+        postits = workspace.postits;
+    } else {
+        try {
+            postits = JSON.parse(
+                localStorage.getItem(POSTIT_KEY) || "[]"
+            );
+        } catch {
+            postits = [];
+        }
+    }
+
+    renderNotes();
+
+    // Sauvegarde de la migration si nécessaire
+    if (!Array.isArray(workspace.notes) ||
+        !Array.isArray(workspace.postits)) {
+        await saveWorkspace();
+    }
+}
+
+
+/* =====================================
+   AFFICHAGE DES CARTES
+===================================== */
+
+function renderNotes() {
+
+    notesGrid.innerHTML = "";
+
+    if (notes.length === 0) {
+        notesGrid.innerHTML = `
+            <p class="empty-notes">
+                Tu n'as pas encore de note.
+                Clique sur « Nouvelle note » pour commencer !
+            </p>
+        `;
+        return;
+    }
+
+    notes.forEach(note => {
+
+        const card = document.createElement("div");
+        card.className = `note-card note-${note.color || "pink"}`;
+
+        const title = document.createElement("h3");
+        title.textContent = note.title || "Sans titre";
+
+        const preview = document.createElement("p");
+        preview.textContent =
+            getTextPreview(note.content).slice(0, 100) ||
+            "Écris quelque chose dans cette note...";
+
+        const date = document.createElement("small");
+        date.textContent = "Ouvrir la note";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "note-card-delete";
+        deleteButton.textContent = "×";
+        deleteButton.title = "Supprimer cette note";
+
+        deleteButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            deleteNote(note.id);
+        });
+
+        card.append(title, preview, date, deleteButton);
+
+        card.addEventListener("click", () => {
+            openNote(note.id);
+        });
+
+        notesGrid.appendChild(card);
+    });
+}
+
+
+/* =====================================
+   CREER UNE NOTE
+===================================== */
+
+document.getElementById("new-note-button")
+    .addEventListener("click", () => {
+
+        const note = {
+            id: createId(),
+            title: "Nouvelle note",
+            content: "",
+            color: "pink",
+            updatedAt: new Date().toISOString()
+        };
+
+        notes.unshift(note);
+
+        renderNotes();
+        openNote(note.id);
+        scheduleSave();
+    });
+
+
+/* =====================================
+   OUVRIR UNE NOTE
+===================================== */
+
+function openNote(id) {
+
+    const note = notes.find(item => item.id === id);
+    if (!note) return;
+
+    activeNoteId = id;
+    activeNoteColor = note.color || "pink";
+
+    library.classList.add("hidden");
+    editor.classList.add("active");
+
+    noteTitle.value = note.title || "";
+    mainNote.innerHTML = note.content || "";
+
+    renderNoteColors();
+    renderPostits();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+
+/* =====================================
+   RETOUR A LA BIBLIOTHEQUE
+===================================== */
+
+document.getElementById("back-button")
+    .addEventListener("click", async () => {
+
+        await saveCurrentNote();
+
+        editor.classList.remove("active");
+        library.classList.remove("hidden");
+
+        activeNoteId = null;
+
+        renderNotes();
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+
+/* =====================================
+   MODIFIER UNE NOTE
+===================================== */
+
+function getActiveNote() {
+    return notes.find(note => note.id === activeNoteId);
+}
+
+function saveCurrentNote() {
+
+    const note = getActiveNote();
+    if (!note) return Promise.resolve();
+
+    note.title = noteTitle.value.trim() || "Sans titre";
+    note.content = mainNote.innerHTML;
+    note.color = activeNoteColor;
+    note.updatedAt = new Date().toISOString();
+
+    renderNotes();
+
+    return saveWorkspace();
+}
+
+noteTitle.addEventListener("input", () => {
+    const note = getActiveNote();
+    if (!note) return;
+
+    note.title = noteTitle.value;
+    note.color = activeNoteColor;
+    scheduleSave();
+});
+
+mainNote.addEventListener("input", () => {
+    const note = getActiveNote();
+    if (!note) return;
+
+    note.content = mainNote.innerHTML;
+    note.updatedAt = new Date().toISOString();
+
+    scheduleSave();
+});
+
+document.getElementById("save-button")
+    .addEventListener("click", async () => {
+
+        clearTimeout(saveTimer);
+        await saveCurrentNote();
+
+        updateStatus("✓ Note enregistrée");
+    });
+
+
+/* =====================================
+   COULEURS DES CARTES
+===================================== */
+
+function renderNoteColors() {
+
+    document.querySelectorAll(".note-color").forEach(button => {
+        button.classList.toggle(
+            "selected",
+            button.dataset.noteColor === activeNoteColor
+        );
+    });
+}
+
+document.querySelectorAll(".note-color").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        activeNoteColor = button.dataset.noteColor;
+
+        const note = getActiveNote();
+        if (!note) return;
+
+        note.color = activeNoteColor;
+
+        renderNoteColors();
+        renderNotes();
+        scheduleSave();
+    });
+
+});
+
+
+/* =====================================
+   SUPPRIMER UNE NOTE
+===================================== */
+
+async function deleteNote(id) {
+
+    if (!confirm("Veux-tu vraiment supprimer cette note ?")) {
+        return;
+    }
+
+    notes = notes.filter(note => note.id !== id);
+
+    if (activeNoteId === id) {
+        activeNoteId = null;
+        editor.classList.remove("active");
+        library.classList.remove("hidden");
+    }
+
+    renderNotes();
+    await saveWorkspace();
+}
+
+document.getElementById("delete-note-button")
+    .addEventListener("click", () => {
+        if (activeNoteId) deleteNote(activeNoteId);
+    });
+
+
+/* =====================================
+   POST-IT
+===================================== */
+
 function savePostits() {
-    localStorage.setItem(POSTIT_KEY, JSON.stringify(postits));
+    scheduleSave();
 }
 
 function createPostit(data) {
+
     const postit = document.createElement("div");
+
     postit.className = `postit ${data.color}`;
     postit.dataset.id = data.id;
 
-    postit.style.left = data.left + "px";
-    postit.style.top = data.top + "px";
+    postit.style.left = (data.left || 20) + "px";
+    postit.style.top = (data.top || 20) + "px";
 
     const handle = document.createElement("div");
     handle.className = "postit-handle";
-    handle.innerHTML = '<span>⠿</span><button type="button" class="delete-postit" title="Supprimer">×</button>';
+
+    handle.innerHTML = `
+        <span>⠿</span>
+        <button type="button"
+            class="delete-postit"
+            title="Supprimer">×</button>
+    `;
 
     const content = document.createElement("div");
     content.className = "postit-content";
@@ -108,44 +978,60 @@ function createPostit(data) {
     postit.append(handle, content);
     postitsLayer.appendChild(postit);
 
+    // Ecrire directement sur le Post-it
     content.addEventListener("input", () => {
-        updatePostit(data.id, { text: content.textContent });
+        updatePostit(data.id, {
+            text: content.textContent
+        });
     });
 
-    handle.querySelector(".delete-postit").addEventListener("click", () => {
-        postits = postits.filter(item => item.id !== data.id);
-        postit.remove();
-        savePostits();
-    });
+    // Supprimer un Post-it
+    handle.querySelector(".delete-postit")
+        .addEventListener("click", () => {
 
+            postits = postits.filter(item => item.id !== data.id);
+            postit.remove();
+            savePostits();
+        });
+
+    // Déplacer un Post-it
     makeDraggable(postit, handle);
 }
 
+
 function updatePostit(id, changes) {
+
     postits = postits.map(item =>
         item.id === id ? { ...item, ...changes } : item
     );
+
     savePostits();
 }
 
+
 function makeDraggable(postit, handle) {
+
     let startX = 0;
     let startY = 0;
     let originalX = 0;
     let originalY = 0;
 
-    handle.addEventListener("pointerdown", (e) => {
-        if (e.target.closest(".delete-postit")) return;
+    handle.addEventListener("pointerdown", (event) => {
 
-        e.preventDefault();
-        handle.setPointerCapture(e.pointerId);
+        if (event.target.closest(".delete-postit")) return;
 
-        startX = e.clientX;
-        startY = e.clientY;
+        event.preventDefault();
+
+        handle.setPointerCapture(event.pointerId);
+
+        startX = event.clientX;
+        startY = event.clientY;
+
         originalX = postit.offsetLeft;
         originalY = postit.offsetTop;
 
         function move(ev) {
+
             const maxX = notebook.clientWidth - postit.offsetWidth;
             const maxY = notebook.clientHeight - postit.offsetHeight;
 
@@ -164,11 +1050,12 @@ function makeDraggable(postit, handle) {
         }
 
         function stop() {
+
             handle.removeEventListener("pointermove", move);
             handle.removeEventListener("pointerup", stop);
             handle.removeEventListener("pointercancel", stop);
 
-            updatePostit(Number(postit.dataset.id), {
+            updatePostit(dataId(postit), {
                 left: postit.offsetLeft,
                 top: postit.offsetTop
             });
@@ -180,11 +1067,21 @@ function makeDraggable(postit, handle) {
     });
 }
 
-// Ajouter un Post-it
+function dataId(postit) {
+    return postit.dataset.id;
+}
+
+
+/* =====================================
+   AJOUTER DES POST-IT
+===================================== */
+
 document.querySelectorAll(".add-postit").forEach(button => {
+
     button.addEventListener("click", () => {
+
         const color = button.dataset.color;
-        const id = Date.now() + nextId++;
+        const id = createId();
 
         const position = postits.length;
 
@@ -192,35 +1089,86 @@ document.querySelectorAll(".add-postit").forEach(button => {
             id,
             color,
             text: "",
-            left: 30 + (position % 4) * 35,
+            left: 25 + (position % 4) * 35,
             top: 35 + (position % 5) * 35
         };
 
         postits.push(data);
+
         createPostit(data);
         savePostits();
     });
+
 });
 
-// Afficher les Post-it sauvegardés
-postits.forEach(createPostit);
-</script>
 
-<!-- Vérification de connexion -->
-<script>
+/* =====================================
+   AFFICHER LES POST-IT
+===================================== */
+
+function renderPostits() {
+
+    postitsLayer.innerHTML = "";
+
+    postits.forEach(createPostit);
+}
+
+
+/* =====================================
+   CONNEXION ET INITIALISATION
+===================================== */
+
 async function verifierConnexion() {
-    const { data, error } =
-        await window.supabaseClient.auth.getUser();
 
-    if (error || !data.user) {
-        window.location.replace("connexion.html");
-        return;
+    try {
+
+        const { data, error } =
+            await window.supabaseClient.auth.getUser();
+
+        if (error || !data.user) {
+            window.location.replace("connexion.html");
+            return;
+        }
+
+        currentUser = data.user;
+
+        await loadWorkspace();
+
+        console.log("Notes chargées pour :", currentUser.email);
+
+    } catch (error) {
+
+        console.error("Erreur de chargement :", error);
+
+        alert(
+            "Impossible de charger tes notes. Vérifie ta connexion et réessaie."
+        );
     }
-
-    console.log("Utilisateur connecté :", data.user.email);
 }
 
 verifierConnexion();
+
+
+/* Sauvegarder les modifications en quittant la page */
+
+window.addEventListener("pagehide", () => {
+
+    if (!currentUser) return;
+
+    clearTimeout(saveTimer);
+
+    const note = getActiveNote();
+
+    if (note) {
+        note.title = noteTitle.value.trim() || "Sans titre";
+        note.content = mainNote.innerHTML;
+        note.color = activeNoteColor;
+    }
+
+    // La sauvegarde automatique normale est prioritaire.
+    saveWorkspace();
+});
+
 </script>
 
 </body>
