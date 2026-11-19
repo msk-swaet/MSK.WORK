@@ -45,7 +45,6 @@
     </section>
 </main>
 
-<!-- Fenêtre d'ajout d'événement -->
 <div id="event-modal" class="event-modal">
     <div class="event-form">
         <button id="close-modal" class="close-modal">×</button>
@@ -67,11 +66,9 @@
     </div>
 </div>
 
-<!-- Bibliothèque et configuration Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 
-<!-- Fonctionnement du calendrier -->
 <script>
 const monthYear = document.getElementById("month-year");
 const calendarDays = document.getElementById("calendar-days");
@@ -81,13 +78,106 @@ const eventForm = document.getElementById("event-form");
 
 let currentDate = new Date();
 let selectedDate = null;
-
-let events = JSON.parse(
-    localStorage.getItem("msk-work-events") || "{}"
-);
+let events = {};
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
+
+let sauvegardeEnCours = false;
+
+// Charger les événements depuis Supabase
+async function chargerEvenements() {
+    try {
+        const { data: userData, error: userError } =
+            await window.supabaseClient.auth.getUser();
+
+        if (userError || !userData.user) {
+            window.location.replace("connexion.html");
+            return;
+        }
+
+        const { data, error } = await window.supabaseClient
+            .from("user_workspace")
+            .select("data")
+            .eq("user_id", userData.user.id)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        events = data?.data?.events || {};
+
+        localStorage.setItem(
+            "msk-work-events",
+            JSON.stringify(events)
+        );
+
+        displayCalendar();
+        displayEvents();
+
+        console.log("Calendrier chargé depuis Supabase.");
+
+    } catch (error) {
+        console.error("Erreur de chargement :", error);
+        alert("Impossible de charger le calendrier : " + error.message);
+    }
+}
+
+// Enregistrer les événements dans Supabase
+async function saveEvents() {
+    displayCalendar();
+    displayEvents();
+
+    if (sauvegardeEnCours) return;
+    sauvegardeEnCours = true;
+
+    try {
+        const { data: userData, error: userError } =
+            await window.supabaseClient.auth.getUser();
+
+        if (userError || !userData.user) {
+            throw new Error("Utilisateur non connecté.");
+        }
+
+        const user = userData.user;
+
+        const { data: existingData, error: readError } =
+            await window.supabaseClient
+                .from("user_workspace")
+                .select("data")
+                .eq("user_id", user.id)
+                .maybeSingle();
+
+        if (readError) throw readError;
+
+        const workspace = existingData?.data || {};
+        workspace.events = events;
+
+        const { error } = await window.supabaseClient
+            .from("user_workspace")
+            .upsert({
+                user_id: user.id,
+                data: workspace,
+                updated_at: new Date().toISOString()
+            }, {
+                onConflict: "user_id"
+            });
+
+        if (error) throw error;
+
+        localStorage.setItem(
+            "msk-work-events",
+            JSON.stringify(events)
+        );
+
+        console.log("Calendrier sauvegardé !");
+
+    } catch (error) {
+        console.error("Erreur de sauvegarde :", error);
+        alert("Erreur Supabase : " + error.message);
+    } finally {
+        sauvegardeEnCours = false;
+    }
+}
 
 function dateKey(year, month, day) {
     return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -220,16 +310,6 @@ function displayEvents() {
     });
 }
 
-function saveEvents() {
-    localStorage.setItem(
-        "msk-work-events",
-        JSON.stringify(events)
-    );
-
-    displayCalendar();
-    displayEvents();
-}
-
 eventForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -237,7 +317,7 @@ eventForm.addEventListener("submit", (e) => {
     const time = document.getElementById("event-time").value;
     const description = document.getElementById("event-description").value.trim();
 
-    if (!title) return;
+    if (!title || !selectedDate) return;
 
     if (!events[selectedDate]) {
         events[selectedDate] = [];
@@ -269,24 +349,8 @@ modal.addEventListener("click", (e) => {
     if (e.target === modal) closeModal();
 });
 
-displayCalendar();
-</script>
-
-<!-- Vérification de connexion -->
-<script>
-async function verifierConnexion() {
-    const { data, error } =
-        await window.supabaseClient.auth.getUser();
-
-    if (error || !data.user) {
-        window.location.replace("connexion.html");
-        return;
-    }
-
-    console.log("Utilisateur connecté :", data.user.email);
-}
-
-verifierConnexion();
+// Démarrage
+chargerEvenements();
 </script>
 
 </body>
