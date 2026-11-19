@@ -150,6 +150,15 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
+     <script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/MSK.WORK/service-worker.js")
+      .then(() => console.log("MSK.WORK est prêt !"))
+      .catch(error => console.error("Erreur :", error));
+  });
+}
+</script>
 </body>
     <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#111111">
