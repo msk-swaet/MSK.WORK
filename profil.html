@@ -21,41 +21,11 @@
     </nav>
 </header>
 
-<main class="profile-container">
-    <h1>Mon profil</h1>
-    <p>Personnalise ton espace MSK.WORK.</p>
-
-    <section class="profile-card">
-        <div class="avatar-container">
-            <img id="avatarPreview" src="" alt="Photo de profil">
-            <label for="avatarInput">Changer la photo</label>
-            <input type="file" id="avatarInput" accept="image/*" hidden>
-        </div>
-
-        <form id="profileForm">
-            <label for="username">Nom d'utilisateur</label>
-            <input type="text" id="username" placeholder="Mon pseudo">
-
-            <label for="firstName">Prénom</label>
-            <input type="text" id="firstName" placeholder="Ton prénom">
-
-            <label for="lastName">Nom</label>
-            <input type="text" id="lastName" placeholder="Ton nom">
-
-            <label for="email">Adresse e-mail</label>
-            <input type="email" id="email" disabled>
-
-            <button type="submit">Enregistrer les modifications</button>
-        </form>
-
-        <button type="button" id="logoutButton" class="logout-button">
-            Se déconnecter
-        </button>
-
-        <p id="profileMessage"></p>
-    </section>
+<main style="padding: 40px; color: white; background: #222;">
+    <h1>MON PROFIL</h1>
+    <p>Bienvenue sur ton espace personnel MSK.WORK.</p>
+    <p>Si tu vois ce texte, le contenu de la page fonctionne.</p>
 </main>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 
