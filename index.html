@@ -133,16 +133,31 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
-</body>
-    <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#111111">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <div class="splash-screen" id="splashScreen">
+   <div class="splash-screen" id="splashScreen">
     <img src="icons/icon-512.png" alt="Logo MSK.WORK" class="splash-logo">
 
     <div class="splash-name">
         MSK<span>.WORK</span>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const splash = document.getElementById("splashScreen");
+
+    if (!splash) return;
+
+    if (sessionStorage.getItem("mskSplashShown")) {
+        splash.classList.add("hide");
+        return;
+    }
+
+    sessionStorage.setItem("mskSplashShown", "true");
+
+    setTimeout(() => {
+        splash.classList.add("hide");
+    }, 2500);
+});
+</script>
+</body>
 </html>
